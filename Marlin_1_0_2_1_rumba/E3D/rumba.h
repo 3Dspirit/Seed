@@ -1,6 +1,9 @@
+rumba.h
+
+
 
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_RAMPS_13_EEB 
+  #define MOTHERBOARD BOARD_RUMBA 
 #endif
 // This defines the number of extruders
 #define EXTRUDERS 2
@@ -21,12 +24,7 @@
 #define EXTRUDER_OFFSET_X {0.0, -40.00} // (in mm) for each extruder, offset of the hotend on the X axis
 #define EXTRUDER_OFFSET_Y {0.0, 0.0}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
-//Purga manual para cada uno 
-  MENU_ITEM(gcode, "Purga Manual 1", PSTR("M6 T0\nM83\nG1 E50 F200\nM83"));
-  MENU_ITEM(gcode, "Purga Manual 2", PSTR("M6 T1\nM83\nG1 E50 F200\nM83"));
 
-//Preparar PLA 
-MENU_ITEM(function, MSG_PREHEAT_PLA_ALL, lcd_preheat_pla_menu);
 
 Frankestein:
 //COnfiguracion general
@@ -59,3 +57,9 @@ white seed:
 #define Z_MAX_POS 195
 
 
+//Purga manual para cada uno 
+  MENU_ITEM(gcode, "Purga Manual 1", PSTR("M6 T0\nM83\nG1 E50 F200\nM83"));
+  MENU_ITEM(gcode, "Purga Manual 2", PSTR("M6 T1\nM83\nG1 E50 F200\nM83"));
+
+  //Preparar PLA 
+    MENU_ITEM(function, MSG_PREHEAT_PLA_ALL, lcd_preheat_pla_menu);
