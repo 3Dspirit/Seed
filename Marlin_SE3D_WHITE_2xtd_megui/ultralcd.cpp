@@ -417,28 +417,28 @@ static void lcd_main_menu() {
   #if ENABLED(SDSUPPORT)
     if (card.cardOK) {
       if (card.isFileOpen()) {
-                //--- CAMBIAR TEMPERATURA PICO Y CAMA DURANTE IMPRESION -------------------------------------------------
-                                                #if TEMP_SENSOR_0 != 0
-                                            MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 15);
-                                          #endif
-                                          #if EXTRUDERS > 1
-                                            #if TEMP_SENSOR_1 != 0
-                                              MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N2, &target_temperature[1], 0, HEATER_1_MAXTEMP - 15);
-                                            #endif
-                                            #if EXTRUDERS > 2
-                                              #if TEMP_SENSOR_2 != 0
-                                                MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N3, &target_temperature[2], 0, HEATER_2_MAXTEMP - 15);
-                                              #endif
-                                              #if EXTRUDERS > 3
-                                                #if TEMP_SENSOR_3 != 0
-                                                  MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N4, &target_temperature[3], 0, HEATER_3_MAXTEMP - 15);
-                                                #endif
-                                              #endif // EXTRUDERS > 3
-                                            #endif // EXTRUDERS > 2
-                                          #endif // EXTRUDERS > 1
-                                          #if TEMP_SENSOR_BED != 0
-                                            MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 15);
-                                          #endif
+      //--- CAMBIAR TEMPERATURA PICO Y CAMA DURANTE IMPRESION -------------------------------------------------
+          #if TEMP_SENSOR_0 != 0
+              MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 15);
+            #endif
+            #if EXTRUDERS > 1
+              #if TEMP_SENSOR_1 != 0
+                MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N2, &target_temperature[1], 0, HEATER_1_MAXTEMP - 15);
+              #endif
+              #if EXTRUDERS > 2
+                #if TEMP_SENSOR_2 != 0
+                  MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N3, &target_temperature[2], 0, HEATER_2_MAXTEMP - 15);
+                #endif
+                #if EXTRUDERS > 3
+                  #if TEMP_SENSOR_3 != 0
+                    MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE MSG_N4, &target_temperature[3], 0, HEATER_3_MAXTEMP - 15);
+                  #endif
+                #endif // EXTRUDERS > 3
+              #endif // EXTRUDERS > 2
+          #endif // EXTRUDERS > 1
+            #if TEMP_SENSOR_BED != 0
+              MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 15);
+            #endif
         //-------------------------------------------------------------------------------------------------------
 //        MENU_ITEM(function, MSG_STOP_PRINT, lcd_sdcard_stop);
         #ifdef FILAMENTCHANGEENABLE
@@ -691,11 +691,14 @@ void _lcd_preheat(int endnum, const float temph, const float tempb, const int fa
     START_MENU();
     MENU_ITEM(back, MSG_PREPARE, lcd_prepare_menu);
     #if EXTRUDERS == 1
+      SERIAL_PROTOCOLPGM("Calentando Estrusor 1");
       MENU_ITEM(function, MSG_PREHEAT_PLA, lcd_preheat_pla0);
     #else
+      SERIAL_PROTOCOLPGM("Calentando Estrusor 1 Y 2");
       MENU_ITEM(function, MSG_PREHEAT_PLA_N MSG_H1, lcd_preheat_pla0);
       MENU_ITEM(function, MSG_PREHEAT_PLA_N MSG_H2, lcd_preheat_pla1);
       #if EXTRUDERS > 2
+      SERIAL_PROTOCOLPGM("Calentando Estrusor 3");
         MENU_ITEM(function, MSG_PREHEAT_PLA_N MSG_H3, lcd_preheat_pla2);
         #if EXTRUDERS > 3
           MENU_ITEM(function, MSG_PREHEAT_PLA_N MSG_H4, lcd_preheat_pla3);
@@ -750,14 +753,16 @@ static void lcd_prepare_menu() {
 
   //
   // ^ Main
-  //                                            ------------------------------------------------------------------AGREGADO LEAN
+  //------------------------------------------------------------------AGREGADO LEAN
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
   MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 15);
   MENU_MULTIPLIER_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 15);
-  MENU_ITEM(function, MSG_PREHEAT_PLA_ALL, lcd_preheat_pla0);
+  //MENU_ITEM(function, MSG_PREHEAT_PLA_ALL, lcd_preheat_pla0);
+  MENU_ITEM(function, MSG_PREHEAT_PLA_ALL, lcd_preheat_pla_menu);
   MENU_ITEM(function, MSG_PREHEAT_ABS_ALL, lcd_preheat_abs0);
-  MENU_ITEM(gcode, "Purga Manual", PSTR("M83\nG1 E50 F200\nM83"));
-  //                                            ------------------------------------------------------------------AGREGADO LEAN
+  MENU_ITEM(gcode, "Purga Manual 1", PSTR("M6 T0\nM83\nG1 E50 F200\nM83"));
+  MENU_ITEM(gcode, "Purga Manual 2", PSTR("M6 T1\nM83\nG1 E50 F200\nM83"));
+  // ------------------------------------------------------------------AGREGADO LEAN
   // Auto Home
   //
   MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G91\nG1 Z10 F6000\nG90\nG28 X\nG28 Y\nG1 X0 F6000\nG28 Z\nM18"));
@@ -1129,6 +1134,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu() {
   MENU_ITEM(back, MSG_TEMPERATURE, lcd_control_temperature_menu);
   MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &plaPreheatFanSpeed, 0, 255);
   #if TEMP_SENSOR_0 != 0
+
     MENU_ITEM_EDIT(int3, MSG_NOZZLE, &plaPreheatHotendTemp, HEATER_0_MINTEMP, HEATER_0_MAXTEMP - 15);
   #endif
   #if TEMP_SENSOR_BED != 0
